@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro - Top Filmes Brasil</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/auth.css}" />
+</head>
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+
+<div class="auth-modal" style="position: static; margin: 2rem;">
+    <div class="modal-content auth-modal">
+        <div class="modal-body">
+            <div class="auth-container">
+                <h2 class="auth-title">Criar Conta</h2>
+                <p class="auth-subtitle">Junte-se à comunidade TopFilmesBrasil</p>
+
+                <form id="signUpForm" class="auth-form" th:action="@{/api/signup}" method="post">
+                    <div class="form-group">
+                        <label for="signupName" class="form-label">Nome Completo</label>
+                        <input type="text" id="signupName" name="nomeCompleto" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupEmail" class="form-label">Email</label>
+                        <input type="email" id="signupEmail" name="email" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupPassword" class="form-label">Senha</label>
+                        <input type="password" id="signupPassword" name="password" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupConfirmPassword" class="form-label">Confirmar Senha</label>
+                        <input type="password" id="signupConfirmPassword" name="confirmPassword" class="form-input" required>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="terms" name="terms" required>
+                            <span>Eu aceito os <a href="#" class="link">Termos de Serviço</a></span>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn-primary auth-submit">Criar Conta</button>
+                </form>
+
+                <p class="auth-footer">
+                    Já tem uma conta? <a th:href="@{/login}" class="link">Fazer login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/auth.js}"></script>
+
+</body>
+</html>

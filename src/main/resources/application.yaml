@@ -1,0 +1,63 @@
+spring:
+  application:
+    name: TopFilmesBrasil
+
+    defer-datasource-initialization: true
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB   # Tamanho máximo por arquivo
+      max-request-size: 20MB  # Tamanho máximo total da requisição
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/topfilmesbrasil
+    username: postgres
+    password: 2508Ptk* # senha do PostgreSQL
+    driver-class-name: org.postgresql.Driver
+
+  # Configuração do JPA/Hibernate
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+
+      ddl-auto: create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # Configuração para Scripts SQL de Inicialização
+
+      mode: always
+      platform: postgresql
+      continue-on-error: false
+
+  # Configuração do Thymeleaf
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    cache: false
+
+  # Configuração de recursos estáticos
+  web:
+    resources:
+      static-locations: classpath:/static/
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+logging:
+  level:
+    root: INFO
+    com.topfilmesbrasil: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.tool.schema: DEBUG
+    org.springframework.jdbc.datasource.init: DEBUG

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Adicionar Novo Filme - Admin TopFilmesBrasil</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" /> <link rel="stylesheet" th:href="@{/css/auth.css}" /> <style>
+  body { background-color: var(--primary-bg); color: var(--text-primary); font-family: 'Inter', sans-serif; }
+  .admin-container { max-width: 900px; margin: 100px auto 20px; padding: 2rem; background-color: var(--secondary-bg); border-radius: 8px; }
+  .admin-container h2 { color: var(--text-primary); margin-bottom: 1.5rem; text-align: center; font-size: 2rem;}
+  .form-group { margin-bottom: 1rem; }
+  .form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 500; }
+  .form-input, .form-textarea { /* Usando classes do auth.css */
+    width: 100%; padding: 0.8rem 1rem; background-color: var(--card-bg);
+    border: 2px solid var(--border-color); border-radius: 8px;
+    color: var(--text-primary); font-size: 1rem;
+  }
+  .form-textarea { min-height: 100px; resize: vertical; }
+  .btn-submit {
+    background-color: var(--accent-red); color: var(--text-primary); padding: 0.8rem 2rem;
+    border: none; border-radius: 6px; font-size: 1rem; font-weight: 600;
+    cursor: pointer; transition: var(--transition); text-transform: uppercase;
+  }
+  .btn-submit:hover { background-color: var(--accent-red-hover); }
+  .error-message { color: #f44336; font-size: 0.85em; margin-top: 0.25rem; }
+  .success-message { color: #4caf50; background-color: rgba(76, 175, 80, 0.1); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; text-align: center; }
+  .form-note { font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem; }
+</style>
+</head>
+<body>
+
+<div class="admin-container">
+  <h2>Adicionar Novo Filme</h2>
+
+  <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+  <div th:if="${errorMessage}" class="error-message" style="background-color: rgba(244,67,54,0.1); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; text-align:center;" th:text="${errorMessage}"></div>
+
+  <form th:action="@{/admin/content/filmes}" th:object="${filme}" method="post" class="auth-form">
+    <div class="form-group">
+      <label for="titulo" class="form-label">Título:</label>
+      <input type="text" id="titulo" th:field="*{titulo}" class="form-input" />
+      <span class="form-error" th:if="${#fields.hasErrors('titulo')}" th:errors="*{titulo}"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="descricao" class="form-label">Descrição (Sinopse):</label>
+      <textarea id="descricao" th:field="*{descricao}" class="form-textarea"></textarea>
+      <span class="form-error" th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="anoLancamento" class="form-label">Ano de Lançamento:</label>
+      <input type="number" id="anoLancamento" th:field="*{anoLancamento}" class="form-input" />
+    </div>
+
+    <div class="form-group">
+      <label for="genero" class="form-label">Gênero Principal (ex: Ação):</label>
+      <input type="text" id="genero" th:field="*{genero}" class="form-input" />
+    </div>
+
+    <div class="form-group">
+      <label for="generosCsv" class="form-label">Tags de Gênero (separados por vírgula, ex: Ação, Ficção Científica):</label>
+      <input type="text" id="generosCsv" name="generosCsv" class="form-input" th:value="${#strings.listJoin(filme.listaGeneros, ', ')}" />
+      <small class="form-note">O backend processará esta string para o Set 'listaGeneros'.</small>
+    </div>
+
+    <div class="form-group">
+      <label for="urlPoster" class="form-label">URL do Pôster (ex: /images/meu-poster.jpg):</label>
+      <input type="text" id="urlPoster" th:field="*{urlPoster}" class="form-input" />
+    </div>
+
+    <div class="form-group">
+      <label for="urlBackgroundImage" class="form-label">URL da Imagem de Fundo (opcional):</label>
+      <input type="text" id="urlBackgroundImage" th:field="*{urlBackgroundImage}" class="form-input" />
+    </div>
+
+    <div class="form-group">
+      <label for="urlTrailer" class="form-label">URL do Trailer (YouTube Embed ID ou link completo):</label>
+      <input type="text" id="urlTrailer" th:field="*{urlTrailer}" class="form-input" />
+    </div>
+
+    <div class="form-group">
+      <label for="duracaoMinutos" class="form-label">Duração (minutos):</label>
+      <input type="number" id="duracaoMinutos" th:field="*{duracaoMinutos}" class="form-input" />
+    </div>
+
+    <div class="form-group">
+      <label for="classificacaoIndicativa" class="form-label">Classificação Indicativa (ex: 16, Livre):</label>
+      <input type="text" id="classificacaoIndicativa" th:field="*{classificacaoIndicativa}" class="form-input" />
+    </div>
+
+    <div class="form-group">
+      <label for="diretor" class="form-label">Diretor:</label>
+      <input type="text" id="diretor" th:field="*{diretor}" class="form-input" />
+    </div>
+
+    <div class="form-group">
+      <label for="elenco" class="form-label">Elenco Principal (separado por vírgula):</label>
+      <textarea id="elenco" th:field="*{elenco}" class="form-textarea"></textarea>
+    </div>
+
+    <button type="submit" class="btn-primary auth-submit">Salvar Filme</button>
+  </form>
+</div>
+
+</body>
+</html>

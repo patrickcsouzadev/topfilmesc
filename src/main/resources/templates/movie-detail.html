@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title th:text="${movie.title} + ' - Top Filmes Brasil'">Detalhes do Filme - TopFilmesBrasil</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <link rel="stylesheet" th:href="@{/css/carousel.css}" />
+  <link rel="stylesheet" th:href="@{/css/modal.css}" />
+  <link rel="stylesheet" th:href="@{/css/auth.css}" />
+  <link rel="stylesheet" th:href="@{/css/movie-detail.css}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="header">
+  <div class="header-container">
+    <div class="logo">
+      <h1>Top<span>FilmesBrasil</span></h1>
+    </div>
+    <nav class="nav-menu">
+      <a th:href="@{/}" class="nav-link">Home</a>
+      <a th:href="@{/movies}" class="nav-link active">Filmes</a>
+      <a th:href="@{/tvshows}" class="nav-link">Séries</a>
+      <a th:href="@{/new-releases}" class="nav-link">Novos Releases</a>
+      <a th:href="@{/top-rated}" class="nav-link">Top Rated</a>
+    </nav>
+    <div class="header-actions">
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="Busque filmes e séries..." />
+        <button class="search-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+      </div>
+      <button class="sign-up" th:onclick="|window.location.href='@{/cadastro}'|">Cadastre-se</button>
+    </div>
+  </div>
+</header>
+
+<section class="movie-hero" th:style="|background-image: url('@{${movie.backgroundImage}}');|">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="movie-poster-detail">
+      <img th:src="@{${movie.posterImage}}" th:alt="${movie.title}" />
+    </div>
+    <div class="movie-info-detail">
+      <h1 class="movie-title" th:text="${movie.title}">Nome do filme</h1>
+      <div class="movie-meta-detail">
+        <div class="rating">
+          <span class="stars">★★★★★</span>
+          <span class="score" th:text="${movie.rating}">4.7</span>
+        </div>
+        <span class="year" th:text="${movie.year}">1999</span>
+        <span class="duration" th:text="${movie.duration}">136 min</span>
+        <span class="genre" th:each="genre : ${movie.genres}" th:text="${genre}">Action</span>
+      </div>
+      <p class="movie-overview" th:text="${movie.overview}">
+        Visão geral do filme vai aqui. Uma breve descrição que captura a essência do filme, seus temas e o que o torna especial.
+      </p>
+      <div class="movie-actions">
+        <button class="btn-primary watch-trailer">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Assistir ao Trailer
+        </button>
+        <button class="btn-secondary add-watchlist">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
+          Adicionar aos favoritos
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="movie-details-main">
+  <div class="details-container">
+    <section class="details-section">
+      <h2>Visão Geral</h2>
+      <p th:text="${movie.fullDescription}">
+        A descrição completa do filme vai aqui...
+      </p>
+    </section>
+
+    <section class="details-section">
+      <h2>Elenco e Equipe</h2>
+      <div class="cast-grid">
+        <div class="cast-member" th:each="member : ${movie.cast}">
+          <img th:src="@{${member.photo}}" th:alt="${member.name}" />
+          <h4 th:text="${member.name}">Nome do Ator</h4>
+          <p th:text="${member.character}">Personagem</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="details-section reviews-section">
+      <div class="section-header">
+        <h2>Avaliações e Comentários</h2>
+        <button class="write-review-btn" th:if="${user != null}">Escrever Avaliação</button>
+      </div>
+
+      <div id="reviewForm" class="review-form" th:if="${user != null}">
+        <form th:action="@{/movies/{id}/review(id=${movie.id})}" method="post">
+          <div class="form-group">
+            <label class="form-label">Sua Avaliação</label>
+            <div class="star-rating">
+              <input type="radio" id="star5" name="rating" value="5">
+              <label for="star5">★</label>
+              <input type="radio" id="star4" name="rating" value="4">
+              <label for="star4">★</label>
+              <input type="radio" id="star3" name="rating" value="3">
+              <label for="star3">★</label>
+              <input type="radio" id="star2" name="rating" value="2">
+              <label for="star2">★</label>
+              <input type="radio" id="star1" name="rating" value="1">
+              <label for="star1">★</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Sua Avaliação</label>
+            <textarea class="form-textarea" name="comment" required></textarea>
+          </div>
+
+          <button type="submit" class="btn-primary">Postar Comentário</button>
+        </form>
+      </div>
+
+      <div class="reviews-list">
+        <div class="review-item" th:each="review : ${movie.reviews}" th:attr="data-review-id=${review.id}">
+          <div class="review-header">
+            <div class="review-author-info" style="display: flex; align-items: center; gap: 0.75rem;">
+              <span class="review-author" th:text="${review.usuario?.nomeCompleto}"></span>
+              <span class="review-rating" th:text="${#strings.repeat('★', review.rating)}"></span>
+              <span th:if="${usuarioLogado?.id == review.usuario?.id}" class="own-review-badge">Seu review</span>
+            </div>
+
+            <button th:if="${usuarioLogado != null and (usuarioLogado.admin or usuarioLogado.id == review.usuario.id)}"
+                    class="btn-delete-review"
+                    title="Deletar review"
+                    th:onclick="
+                  if(confirm('Tem certeza que deseja deletar este review?')) {
+                    fetch('/reviews/api/' + [[${review.id}]], { method: 'DELETE' })
+                      .then(response => {
+                        if(response.ok) {
+                          alert('Review deletado.');
+                          // Remove o elemento da tela
+                          document.querySelector(`.review-item[data-review-id=\'[[${review.id}]]\']`).remove();
+                        } else {
+                          alert('Erro ao deletar o review. Você pode não ter permissão.');
+                        }
+                      });
+                  }">
+              🗑️
+            </button>
+          </div>
+          <p class="review-content" th:text="${review.comentario}"></p>
+          <span class="review-date" th:text="${#temporals.format(review.dataCriacao, 'dd/MM/yyyy')}"></span>
+        </div>
+      </div>
+
+      <p class="no-reviews" th:if="${#lists.isEmpty(movie.reviews)}">
+        Nenhum comentário ainda. Seja o primeiro a deixar uma avaliação!
+      </p>
+    </section>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <h2>Top<span>FilmesBrasil</span></h2>
+      <p>Sua fonte confiável para críticas, classificações e recomendações honestas de filmes e séries de TV.</p>
+    </div>
+
+    <div class="footer-links">
+      <div class="footer-column">
+        <h3>Explorar</h3>
+        <a th:href="@{/movies}">Filmes</a>
+        <a th:href="@{/tvshows}">Séries</a>
+        <a th:href="@{/new-releases}">Novas Releases</a>
+        <a th:href="@{/top-rated}">Top Rated</a>
+      </div>
+
+      <div class="footer-column">
+        <h3>Informação</h3>
+        <a th:href="@{/about}">Sobre nós</a>
+        <a th:href="@{/contact}">Contato</a>
+        <a th:href="@{/privacy}">Politica de privacidade</a>
+        <a th:href="@{/terms}">Termos e serviços</a>
+      </div>
+
+      <div class="footer-column">
+        <h3>Conecte-se</h3>
+        <a href="#">Facebook</a>
+        <a href="#">Twitter</a>
+        <a href="#">Instagram</a>
+        <a href="#">YouTube</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2025 TopFilmesBrasil. All rights reserved.</p>
+  </div>
+</footer>
+
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/movie-detail.js}"></script>
+<script th:src="@{/js/auth.js}"></script>
+</body>
+</html></html>

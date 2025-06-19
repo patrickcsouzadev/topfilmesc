@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Top Filmes Brasil - Reviews de filmes e séries</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <link rel="stylesheet" th:href="@{/css/carousel.css}" />
+  <link rel="stylesheet" th:href="@{/css/modal.css}" />
+  <link rel="stylesheet" th:href="@{/css/admin-style.css}" />
+  <link rel="stylesheet" th:href="@{/css/auth.css}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body th:data-user-logged="${usuarioLogado != null}"
+      th:data-user-admin="${usuarioLogado != null and usuarioLogado.admin}"
+      th:data-user-id="${usuarioLogado != null ? usuarioLogado.id : ''}">
+
+<header class="header" th:fragment="header">
+  <div class="header-container">
+    <div class="logo">
+      <h1>Top<span>FilmesBrasil</span></h1>
+    </div>
+    <nav class="nav-menu">
+      <nav class="nav-menu">
+        <a th:href="@{/movies}" class="nav-link">Home</a>
+        <a th:href="@{/filmes}" class="nav-link">Filmes</a>
+        <a th:href="@{/series}" class="nav-link">Séries</a>
+      </nav>
+      <a href="#" class="nav-link">Releases</a>
+      <a href="#" class="nav-link">Top Avaliados</a>
+      <a th:href="@{/favoritos}" class="nav-link" sec:authorize="isAuthenticated()">Meus Favoritos</a>
+
+      <a th:if="${usuarioLogado != null and usuarioLogado.admin}"
+         th:href="@{/admin/content/add}"
+         class="nav-link admin-link"
+         style="color: var(--accent-red);">
+        🛡️ Admin
+      </a>
+    </nav>
+    <div class="header-actions">
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="Busque filmes e séries..." />
+        <button class="search-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+      </div>
+
+      <button th:if="${usuarioLogado == null}" class="sign-in-btn" onclick="showSignInModal()">Acesse</button>
+
+      <div th:if="${usuarioLogado != null}" class="user-menu">
+        <button class="user-menu-toggle">
+          <span class="user-name" th:text="${usuarioLogado.nomeCompleto}">Nome do Usuário</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="user-dropdown">
+          <div class="user-info">
+            <span th:text="${usuarioLogado.nomeCompleto}">Nome do Usuário</span>
+            <small th:text="${usuarioLogado.email}">email@exemplo.com</small>
+            <!-- Badge de Admin -->
+            <span th:if="${usuarioLogado.admin}" class="admin-badge" style="margin-top: 0.5rem;">🛡️ Administrador</span>
+          </div>
+          <div class="dropdown-divider"></div>
+
+          <div th:if="${usuarioLogado.admin}" class="admin-menu-section">
+            <h4 style="color: var(--accent-red); font-size: 0.85rem; margin: 0.5rem 0;">Administração</h4>
+            <a th:href="@{/admin/content/add}" class="dropdown-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+              Adicionar Conteúdo
+            </a>
+            <a th:href="@{/admin/usuarios}" class="dropdown-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              Gerenciar Usuários
+            </a>
+            <div class="dropdown-divider"></div>
+          </div>
+
+          <a href="/profile" class="dropdown-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            Meu Perfil
+          </a>
+          <a href="/watchlist" class="dropdown-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Minha Lista
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="/usuarios/logout" class="dropdown-item logout">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Sair
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="hero-carousel">
+  <div class="carousel-container" th:if="${not #lists.isEmpty(destaquesCarousel)}">
+
+    <div th:each="destaque, stat : ${destaquesCarousel}"
+         th:classappend="${stat.index == 0} ? 'active' : ''"
+         class="carousel-slide"
+         th:data-movie-id="${destaque.class.simpleName == 'FilmeDTO' ? destaque.id : null}"
+         th:data-show-id="${destaque.class.simpleName == 'SerieDTO' ? destaque.id : null}">
+
+      <div class="slide-background"
+           th:with="imageUrl=${destaque.urlBackgroundImage != null ? destaque.urlBackgroundImage : '/images/default-bg.jpg'}"
+           th:style="'background-image: url(\'' + @{${imageUrl}} + '\');'">
+      </div>
+      <div class="slide-content">
+        <span class="featured-tag">Destaque</span>
+        <h2 class="movie-title" th:text="${destaque.titulo}"></h2>
+        <div class="movie-meta">
+          <div class="rating" th:if="${destaque.mediaRating > 0}">
+            <span class="stars" th:text="${#strings.repeat('★', #numbers.formatInteger(destaque.mediaRating, 1))}"></span>
+            <span class="score" th:text="${#numbers.formatDecimal(destaque.mediaRating, 1, 1)}"></span>
+          </div>
+          <span class="year" th:text="${destaque.anoLancamento}"></span>
+          <span th:each="genero, stat : ${destaque.listaGeneros}" th:if="${stat.index < 2}"
+                class="genre" th:text="${genero}"></span>
+        </div>
+        <p class="movie-description" th:text="${#strings.abbreviate(destaque.descricao, 200)}"></p>
+        <div class="slide-actions">
+          <button class="btn-primary watch-trailer">Assistir ao Trailer</button>
+          <button class="btn-secondary add-watchlist">Add a lista de favoritos</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="carousel-indicators">
+      <button th:each="i : ${#numbers.sequence(0, #lists.size(destaquesCarousel) - 1)}"
+              th:classappend="${i == 0} ? 'active' : ''"
+              class="indicator"
+              th:attr="data-slide=${i}"></button>
+    </div>
+
+    <button class="carousel-control prev">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <button class="carousel-control next">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+  </div>
+</section>
+
+<main class="main-content">
+  <section class="content-section">
+    <h2 class="section-title">Top Avaliações</h2>
+    <div class="movies-grid" th:if="${not #lists.isEmpty(topRated)}">
+      <div th:each="filme : ${topRated}" class="movie-card"
+           th:attr="data-movie-id=${filme.id}, data-content-type='filme'">
+
+        <div th:if="${usuarioLogado != null and usuarioLogado.admin}" class="admin-card-controls">
+          <button class="btn-delete-card" title="Deletar Conteúdo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          </button>
+        </div>
+
+        <div class="movie-poster">
+          <img th:src="${filme.urlPoster != null ? filme.urlPoster : '/images/no-poster.jpg'}" th:alt="${filme.titulo}" />
+          <div class="movie-overlay">
+            <button class="play-btn">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            </button>
+          </div>
+        </div>
+        <div class="movie-info">
+          <h3 class="movie-name" th:text="${filme.titulo}"></h3>
+          <div class="movie-rating"
+               th:if="${filme.mediaRating != null and filme.mediaRating > 0}"
+               th:with="fullStars=${T(java.lang.Math).round(filme.mediaRating)}, emptyStars=${5 - T(java.lang.Math).round(filme.mediaRating)}">
+
+            <span class="stars" th:text="${#strings.repeat('★', fullStars) + #strings.repeat('☆', emptyStars)}"></span>
+            <span class="score" th:text="${#numbers.formatDecimal(filme.mediaRating, 1, 1)}"></span>
+          </div>
+          <div class="movie-details">
+            <span class="year" th:text="${filme.anoLancamento}"></span>
+          </div>
+          <div class="movie-genres">
+            <span th:each="generoTag : ${filme.listaGeneros}" class="genre-tag" th:text="${generoTag}"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <h2 class="section-title">Novas Releases</h2>
+    <div class="movies-grid" th:if="${newReleases != null and not #lists.isEmpty(newReleases)}">
+
+      <div th:each="filme : ${newReleases}" class="movie-card" th:attr="data-movie-id=${filme.id}, data-content-type='filme'">
+        <div class="movie-poster">
+          <img th:src="${filme.urlPoster != null ? filme.urlPoster : '/images/no-poster.jpg'}" th:alt="${filme.titulo}" />
+          <div class="movie-overlay"><button class="play-btn"><svg ...></svg></button></div>
+        </div>
+        <div class="movie-info">
+          <h3 class="movie-name" th:text="${filme.titulo}"></h3>
+          <div class="movie-details"><span class="year" th:text="${filme.anoLancamento}"></span></div>
+          <div class="movie-genres"><span th:each="generoTag : ${filme.listaGeneros}" class="genre-tag" th:text="${generoTag}"></span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="content-section">
+    <h2 class="section-title">Séries de TV</h2>
+    <div class="movies-grid" th:if="${tvShows != null and not #lists.isEmpty(tvShows)}">
+
+      <div th:each="serie : ${tvShows}" class="movie-card" th:attr="data-show-id=${serie.id}, data-content-type='serie'">
+        <div class="movie-poster">
+          <img th:src="${serie.urlPoster != null ? serie.urlPoster : '/images/no-poster.jpg'}" th:alt="${serie.titulo}" />
+          <div class="movie-overlay">
+            <button class="play-btn"><svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></button>
+          </div>
+        </div>
+        <div class="movie-info">
+          <h3 class="movie-name" th:text="${serie.titulo}">Título da Série</h3>
+          <div class="movie-rating"
+               th:if="${serie.mediaRating != null and serie.mediaRating > 0}"
+               th:with="fullStars=${T(java.lang.Math).round(serie.mediaRating)}, emptyStars=${5 - T(java.lang.Math).round(serie.mediaRating)}">
+
+            <span class="stars" th:text="${#strings.repeat('★', fullStars) + #strings.repeat('☆', emptyStars)}"></span>
+            <span class="score" th:text="${#numbers.formatDecimal(serie.mediaRating, 1, 1)}"></span>
+          </div>
+          <div class="movie-details">
+            <span class="year" th:text="${serie.anoLancamento}">2024</span>
+          </div>
+          <div class="movie-genres">
+            <span th:each="generoTag : ${serie.listaGeneros}" class="genre-tag" th:text="${generoTag}">Gênero</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="footer" th:fragment="footer">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <h2>Top<span>FilmesBrasil</span></h2>
+      <p>Sua fonte confiável para críticas, classificações e recomendações honestas de filmes e séries.</p>
+    </div>
+
+    <div class="footer-links">
+      <div class="footer-column">
+        <h3>Explore</h3>
+        <a th:href="@{/movies}">Filmes</a>
+        <a th:href="@{/tvshows}">Séries</a>
+        <a th:href="@{/new-releases}">Novos Releases</a>
+        <a th:href="@{/top-rated}">Top Rated</a>
+      </div>
+
+      <div class="footer-column">
+        <h3>Information</h3>
+        <a th:href="@{/about}">Sobre nós</a>
+        <a th:href="@{/contact}">Contato</a>
+        <a th:href="@{/privacy}">Politica de privacidade</a>
+        <a th:href="@{/terms}">Termos e Serviços</a>
+      </div>
+
+      <div class="footer-column">
+        <h3>Connect</h3>
+        <a href="#">Facebook</a>
+        <a href="#">Twitter</a>
+        <a href="#">Instagram</a>
+        <a href="#">YouTube</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2025 TopFilmesBrasil. Todos os direitos reservados.</p>
+  </div>
+</footer>
+
+<div id="movieModal" class="modal">
+  <div class="modal-content">
+    <button class="modal-close">&times;</button>
+    <div class="modal-body">
+    </div>
+  </div>
+</div>
+
+<div id="signUpModal" class="modal" th:fragment="signUpModal">
+  <div class="modal-content auth-modal">
+    <button class="modal-close" onclick="closeSignUpModal()">&times;</button>
+    <div class="modal-body">
+      <div class="auth-container">
+        <h2 class="auth-title">Criar Conta</h2>
+        <p class="auth-subtitle">Junte-se à comunidade TopFilmesBrasil</p>
+
+        <form id="signUpForm" class="auth-form" th:action="@{/signup}" method="post">
+          <div class="form-group">
+            <label for="signupName" class="form-label">Nome Completo</label>
+            <input type="text" id="signupName" name="nomeCompleto" class="form-input" required>
+            <span class="form-error"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="signupEmail" class="form-label">Email</label>
+            <div class="form-input-group">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              <input type="email" id="signupEmail" name="email" class="form-input" placeholder="seu@email.com" required>
+            </div>
+            <span class="form-error"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="signupPassword" class="form-label">Senha</label>
+            <div class="form-input-group">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <input type="password" id="signupPassword" name="password" class="form-input" placeholder="Crie uma senha forte" required>
+            </div>
+            <span class="form-error"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="signupConfirmPassword" class="form-label">Confirmar Senha</label>
+            <input type="password" id="signupConfirmPassword" name="confirmPassword" class="form-input" required>
+            <span class="form-error"></span>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="terms" name="terms" required>
+              <span>Eu aceito os <a href="#" class="link">Termos de Serviço</a> e a <a href="#" class="link">Política de Privacidade</a></span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn-primary auth-submit">Criar Conta</button>
+        </form>
+
+        <div class="auth-divider">
+          <span>ou</span>
+        </div>
+
+        <div class="social-auth">
+          <button class="social-btn google">
+            <svg width="20" height="20" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Continuar com Google
+          </button>
+          <button class="social-btn facebook">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            Continuar com Facebook
+          </button>
+        </div>
+
+        <p class="auth-footer">
+          Já tem uma conta? <a href="#" class="link" onclick="showSignInModal()">Fazer login</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="signInModal" class="modal" th:fragment="signInModal">
+  <div class="modal-content auth-modal">
+    <button class="modal-close" onclick="closeSignInModal()">&times;</button>
+    <div class="modal-body">
+      <div class="auth-container">
+        <h2 class="auth-title">Bem-vindo de volta</h2>
+        <p class="auth-subtitle">Entre para continuar</p>
+
+        <form id="signInForm" class="auth-form" th:action="@{/api/signin}" method="post">
+          <div class="form-group">
+            <label for="signinEmail" class="form-label">Email</label>
+            <div class="form-input-group">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              <input type="email" id="signinEmail" name="email" class="form-input" placeholder="seu@email.com" required>
+            </div>
+            <span class="form-error"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="signinPassword" class="form-label">Senha</label>
+            <div class="form-input-group">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <input type="password" id="signinPassword" name="password" class="form-input" placeholder="Sua senha" required>
+            </div>
+            <span class="form-error"></span>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="remember" name="remember">
+              <span>Lembrar de mim</span>
+            </label>
+            <a href="#" class="link forgot-password">Esqueceu a senha?</a>
+          </div>
+
+          <button type="submit" class="btn-primary auth-submit">Entrar</button>
+        </form>
+
+        <div class="auth-divider">
+          <span>ou</span>
+        </div>
+
+        <div class="social-auth">
+          <button class="social-btn google">
+            <svg width="20" height="20" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Continuar com Google
+          </button>
+          <button class="social-btn facebook">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            Continuar com Facebook
+          </button>
+        </div>
+
+        <p class="auth-footer">
+          Não tem uma conta? <a href="#" class="link" onclick="showSignUpModal()">Cadastre-se</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/carousel.js}"></script>
+<script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/auth.js}"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Verifica se as funções de auth existem
+    if (typeof showSignInModal !== 'function') {
+      console.error('❌ auth.js não carregou! Função showSignInModal não encontrada');
+
+      // Fallback: cria função básica
+      window.showSignInModal = function() {
+        const modal = document.getElementById('signInModal');
+        if (modal) {
+          modal.classList.add('show');
+          document.body.style.overflow = 'hidden';
+          console.log('✅ Modal de login aberto via fallback');
+        } else {
+          console.error('❌ Modal signInModal não encontrado no DOM');
+        }
+      };
+
+      window.showSignUpModal = function() {
+        const modal = document.getElementById('signUpModal');
+        if (modal) {
+          modal.classList.add('show');
+          document.body.style.overflow = 'hidden';
+          console.log('✅ Modal de cadastro aberto via fallback');
+        } else {
+          console.error('❌ Modal signUpModal não encontrado no DOM');
+        }
+      };
+
+      console.log('✅ Funções de fallback criadas');
+    } else {
+      console.log('✅ auth.js carregado com sucesso');
+    }
+  });
+</script>
+
+<script th:if="${usuarioLogado != null}">
+  window.movieData = window.movieData || {};
+  window.movieData.usuarioLogado = {
+    id: /*[[${usuarioLogado.id}]]*/ null,
+    nome: /*[[${usuarioLogado.nomeCompleto}]]*/ '',
+    email: /*[[${usuarioLogado.email}]]*/ '',
+    admin: /*[[${usuarioLogado.admin}]]*/ false,
+    role: /*[[${usuarioLogado.role?.name()}]]*/ 'ROLE_USER'
+  };
+
+  window.movieDetailData = window.movieDetailData || {};
+  window.movieDetailData.usuarioLogado = window.movieData.usuarioLogado;
+
+  console.log('🔍 =========================');
+  console.log('🔍 DADOS DO USUÁRIO CARREGADOS');
+  console.log('🔍 =========================');
+  console.log('✅ ID:', window.movieData.usuarioLogado.id, typeof window.movieData.usuarioLogado.id);
+  console.log('✅ Nome:', window.movieData.usuarioLogado.nome);
+  console.log('✅ Admin:', window.movieData.usuarioLogado.admin);
+  console.log('✅ Role:', window.movieData.usuarioLogado.role);
+
+  console.log('🔍 ATRIBUTOS DO BODY:');
+  console.log('✅ data-user-logged:', document.body.getAttribute('data-user-logged'));
+  console.log('✅ data-user-admin:', document.body.getAttribute('data-user-admin'));
+  console.log('✅ data-user-id:', document.body.getAttribute('data-user-id'));
+  console.log('🔍 =========================');
+
+  if (window.movieData.usuarioLogado.admin) {
+    console.log('🛡️ USUÁRIO ADMIN DETECTADO');
+  } else {
+    console.log('👤 USUÁRIO COMUM DETECTADO');
+  }
+</script>
+
+<script th:if="${usuarioLogado == null}">
+  window.movieData = window.movieData || {};
+  window.movieData.usuarioLogado = null;
+  window.movieDetailData = window.movieDetailData || {};
+  window.movieDetailData.usuarioLogado = null;
+  console.log('👁️ VISITANTE (sem login)');
+</script>
+
+</body>
+</html>

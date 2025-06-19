@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "spring.application.defer-datasource-initialization",
+      "type": "java.lang.String",
+      "description": "Description for spring.application.defer-datasource-initialization."
+  }
+] }

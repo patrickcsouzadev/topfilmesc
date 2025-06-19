@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciar Usuários - Admin TopFilmesBrasil</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        body { background-color: var(--primary-bg); color: var(--text-primary); font-family: 'Inter', sans-serif; }
+        .admin-container { max-width: 1000px; margin: 100px auto 20px; padding: 2rem; background-color: var(--secondary-bg); border-radius: 8px; }
+        .admin-container h2 { color: var(--text-primary); margin-bottom: 1.5rem; text-align: center; font-size: 2rem;}
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .admin-table th, .admin-table td { padding: 12px 15px; border: 1px solid var(--border-color); text-align: left; }
+        .admin-table th { background-color: var(--card-bg); color: var(--text-primary); font-weight: 600; }
+        .admin-table td { color: var(--text-secondary); }
+        .admin-table tr:nth-child(even) td { background-color: rgba(255,255,255,0.03); }
+        .btn-delete {
+            background-color: #dc3545; color: white; padding: 8px 12px;
+            border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em;
+        }
+        .btn-delete:hover { background-color: #c82333; }
+        .error-message { color: #f44336; background-color: rgba(244,67,54,0.1); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; text-align: center; }
+        .success-message { color: #4caf50; background-color: rgba(76, 175, 80, 0.1); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="admin-container">
+    <h2>Gerenciar Usuários</h2>
+
+    <div class="admin-header-actions" style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem;">
+        <a th:href="@{/movies}" class="btn-home">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9,22 9,12 15,12 15,22"></polyline>
+            </svg>
+            Home
+        </a>
+
+        <a th:href="@{/admin/content/add}" class="btn-secondary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+            Voltar ao Admin
+        </a>
+    </div>
+
+    <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+
+    <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+
+    <div th:if="${usuarios.isEmpty()}">
+        <p>Nenhum usuário encontrado.</p>
+    </div>
+
+    <table class="admin-table" th:unless="${usuarios.isEmpty()}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome Completo</th>
+            <th>Email</th>
+            <th>Papel (Role)</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="usr : ${usuarios}">
+            <td th:text="${usr.id}">1</td>
+            <td th:text="${usr.nomeCompleto}">Nome do Usuário</td>
+            <td th:text="${usr.email}">usuario@email.com</td>
+            <td th:text="${usr.role}">ROLE_USER</td>
+            <td>
+                <form th:action="@{/admin/usuarios/{id}/delete(id=${usr.id})}" method="post" style="display:inline;"
+                      onsubmit="return confirm('Tem certeza que deseja deletar este usuário? Esta ação não pode ser desfeita.');">
+                    <button type="submit" class="btn-delete">Deletar</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<style>
+    .btn-home {
+        background: linear-gradient(135deg, var(--accent-red), #f40612);
+        color: white;
+        text-decoration: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-home:hover {
+        background: linear-gradient(135deg, #f40612, #c82333);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        text-decoration: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        /*transform: translateY(-2px);*/
+        color: var(--text-primary);
+        text-decoration: none;
+    }
+</style>
+</body>
+</html>

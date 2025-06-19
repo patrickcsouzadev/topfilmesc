@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Top Filmes Brasil</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/auth.css}" />
+</head>
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+
+<div class="auth-modal" style="position: static; margin: 2rem;">
+    <div class="modal-content auth-modal">
+        <div class="modal-body">
+            <div class="auth-container">
+                <h2 class="auth-title">Bem-vindo de volta</h2>
+                <p class="auth-subtitle">Entre para continuar</p>
+
+                <div th:if="${param.error}" class="auth-message error">
+                    Email ou senha inválidos.
+                </div>
+
+                <form id="signInForm" class="auth-form" th:action="@{/api/signin}" method="post">
+                    <div class="form-group">
+                        <label for="signinEmail" class="form-label">Email</label>
+                        <input type="email" id="signinEmail" name="email" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signinPassword" class="form-label">Senha</label>
+                        <input type="password" id="signinPassword" name="password" class="form-input" required>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="remember-me" name="remember-me">
+                            <span>Lembrar de mim</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-primary auth-submit">Entrar</button>
+                </form>
+
+                <div class="auth-divider">
+                    <span>ou</span>
+                </div>
+
+                <p class="auth-footer">
+                    Não tem uma conta? <a th:href="@{/signup}" class="link">Cadastre-se</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/auth.js}"></script>
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerenciar Usuários - Admin TopFilmesBrasil</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <link rel="stylesheet" th:href="@{/css/admin-styles.css}" />
+  <link rel="stylesheet" th:href="@{/css/auth.css}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="admin-user-management">
+
+<header th:replace="~{index :: header}"></header>
+
+  <div class="user-management-header">
+    <div>
+      <h1 style="color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+        <span style="font-size: 2rem;">👥</span>
+        Gerenciamento de Usuários
+      </h1>
+      <p style="color: var(--text-secondary); margin: 0.5rem 0 0 0;">
+        Visualize e gerencie todos os usuários cadastrados na plataforma
+      </p>
+    </div>
+    <div style="display: flex; gap: 1rem;">
+      <a th:href="@{/admin/content/add}" class="btn-secondary" style="text-decoration: none;">
+        ← Voltar ao Admin
+      </a>
+      <a th:href="@{/movies}" class="btn-primary" style="text-decoration: none;">
+        🏠 Ir para Home
+      </a>
+    </div>
+  </div>
+
+  <div class="user-stats">
+    <div class="stat-card">
+      <div class="stat-number" th:text="${#lists.size(usuarios)}">0</div>
+      <div class="stat-label">Total de Usuários</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" th:text="${#lists.size(#lists.select(usuarios, u -> u.role.name() == 'ROLE_ADMIN'))}">0</div>
+      <div class="stat-label">Administradores</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" th:text="${#lists.size(#lists.select(usuarios, u -> u.role.name() == 'ROLE_USER'))}">0</div>
+      <div class="stat-label">Usuários Comuns</div>
+    </div>
+  </div>
+
+  <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+  <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+
+  <div th:if="${usuarios.isEmpty()}" style="text-align: center; padding: 4rem; color: var(--text-secondary);">
+    <h3>👤 Nenhum usuário encontrado</h3>
+    <p>Não há usuários cadastrados no sistema.</p>
+  </div>
+
+  <div th:unless="${usuarios.isEmpty()}" class="users-table-container">
+    <table class="users-table">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome Completo</th>
+        <th>Email</th>
+        <th>Papel</th>
+        <th>Ações</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="usuario : ${usuarios}" th:id="'user-row-' + ${usuario.id}">
+        <td>
+          <strong th:text="${usuario.id}">1</strong>
+        </td>
+        <td>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span th:text="${usuario.nomeCompleto}">Nome do Usuário</span>
+            <span th:if="${usuario.admin}" class="admin-badge" style="font-size: 0.7rem; padding: 0.2rem 0.5rem;">
+                                🛡️ ADMIN
+                            </span>
+          </div>
+        </td>
+        <td th:text="${usuario.email}">usuario@email.com</td>
+        <td>
+                        <span th:class="${usuario.role.name() == 'ROLE_ADMIN'} ? 'user-role-badge user-role-admin' : 'user-role-badge user-role-user'"
+                              th:text="${usuario.role.name() == 'ROLE_ADMIN'} ? 'Admin' : 'Usuário'">
+                        </span>
+        </td>
+        <td>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button class="btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;"
+                    onclick="alert('Funcionalidade em desenvolvimento')">
+              📄 Reviews
+            </button>
+
+            <button th:if="${usuario.role.name() != 'ROLE_ADMIN'}"
+                    class="btn-delete-user"
+                    th:onclick="'deleteUser(' + ${usuario.id} + ', \'' + ${usuario.nomeCompleto} + '\')'">
+              🗑️ Deletar
+            </button>
+
+            <span th:if="${usuario.role.name() == 'ROLE_ADMIN'}"
+                  style="color: var(--text-secondary); font-size: 0.8rem; font-style: italic;">
+                                Protegido
+                            </span>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  async function deleteUser(userId, userName) {
+    const confirmMessage = `⚠️ ATENÇÃO!\n\nVocê tem certeza que deseja deletar o usuário:\n"${userName}"?\n\nEsta ação:\n• NÃO pode ser desfeita\n• Irá deletar TODOS os reviews do usuário\n• Irá remover o usuário permanentemente\n\nDigite "DELETAR" para confirmar:`;
+
+    const confirmation = prompt(confirmMessage);
+
+    if (confirmation !== 'DELETAR') {
+      alert('Deleção cancelada. O usuário não foi deletado.');
+      return;
+    }
+
+    const userRow = document.getElementById(`user-row-${userId}`);
+    if (userRow) {
+      userRow.classList.add('deleting');
+    }
+
+    try {
+      const response = await fetch(`/admin/api/usuarios/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert(`✅ Usuário "${userName}" deletado com sucesso!`);
+
+        if (userRow) {
+          userRow.style.animation = 'fadeOut 0.5s ease-out';
+          setTimeout(() => {
+            userRow.remove();
+            updateStats();
+          }, 500);
+        }
+      } else {
+        alert(`❌ Erro ao deletar usuário: ${result.error}`);
+        if (userRow) {
+          userRow.classList.remove('deleting');
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao deletar usuário:', error);
+      alert('❌ Erro de conexão ao deletar usuário.');
+
+      if (userRow) {
+        userRow.classList.remove('deleting');
+      }
+    }
+  }
+
+  function updateStats() {
+    const totalUsers = document.querySelectorAll('.users-table tbody tr').length;
+    const adminUsers = document.querySelectorAll('.user-role-admin').length;
+    const regularUsers = totalUsers - adminUsers;
+
+    const statNumbers = document.querySelectorAll('.stat-number');
+    if (statNumbers[0]) statNumbers[0].textContent = totalUsers;
+    if (statNumbers[1]) statNumbers[1].textContent = adminUsers;
+    if (statNumbers[2]) statNumbers[2].textContent = regularUsers;
+
+    if (totalUsers === 0) {
+      const tableContainer = document.querySelector('.users-table-container');
+      if (tableContainer) {
+        tableContainer.innerHTML = `
+                    <div style="text-align: center; padding: 4rem; color: var(--text-secondary);">
+                        <h3>👤 Nenhum usuário encontrado</h3>
+                        <p>Todos os usuários foram removidos do sistema.</p>
+                    </div>
+                `;
+      }
+    }
+  }
+
+  function addSearchFunctionality() {
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = 'Buscar usuários...';
+    searchInput.style.cssText = `
+            width: 100%;
+            max-width: 300px;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+        `;
+
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const rows = document.querySelectorAll('.users-table tbody tr');
+
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+      });
+    });
+
+    const tableContainer = document.querySelector('.users-table-container');
+    if (tableContainer) {
+      tableContainer.parentNode.insertBefore(searchInput, tableContainer);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('Página de gerenciamento de usuários carregada');
+
+    const hasUsers = document.querySelector('.users-table tbody tr');
+    if (hasUsers) {
+      addSearchFunctionality();
+    }
+  });
+</script>
+
+<style>
+  .success-message {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+    border: 1px solid #4caf50;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .error-message {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    border: 1px solid #f44336;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .deleting {
+    opacity: 0.6;
+    pointer-events: none;
+    background: rgba(220, 53, 69, 0.1) !important;
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+  }
+</style>
+
+</body>
+</html>

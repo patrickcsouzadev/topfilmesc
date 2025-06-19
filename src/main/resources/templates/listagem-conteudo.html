@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${tituloPagina} + ' - Top Filmes Brasil'"></title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal.css}" />
+    <link rel="stylesheet" th:href="@{/css/auth.css}" />
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}" />
+</head>
+<body th:data-user-logged="${usuarioLogado != null}"
+      th:data-user-admin="${usuarioLogado != null and usuarioLogado.admin}"
+      th:data-user-id="${usuarioLogado != null ? usuarioLogado.id : ''}">
+
+<div th:replace="~{index :: header}"></div>
+
+<main class="main-content" style="margin-top: 120px;">
+    <section class="content-section">
+        <h2 class="section-title" th:text="${tituloPagina}"></h2>
+
+        <div th:if="${#lists.isEmpty(conteudos)}">
+            <p style="text-align: center; color: var(--text-secondary); padding: 3rem;">Nenhum conteúdo encontrado.</p>
+        </div>
+
+        <div class="movies-grid" th:if="${not #lists.isEmpty(conteudos)}">
+            <div th:each="conteudo : ${conteudos}" class="movie-card"
+                 th:attr="data-movie-id=${tipoConteudo == 'filme' ? conteudo.id : null},
+                          data-show-id=${tipoConteudo == 'serie' ? conteudo.id : null},
+                          data-content-type=${tipoConteudo}">
+
+                <div th:if="${usuarioLogado != null and usuarioLogado.admin}" class="admin-card-controls">
+                    <button class="btn-delete-card" title="Deletar Conteúdo">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    </button>
+                </div>
+
+                <div class="movie-poster">
+                    <img th:src="${conteudo.urlPoster != null ? conteudo.urlPoster : '/images/no-poster.jpg'}" th:alt="${conteudo.titulo}" />
+                    <div class="movie-overlay">
+                        <button class="play-btn">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-name" th:text="${conteudo.titulo}"></h3>
+                    <div class="movie-rating"
+                         th:if="${conteudo.mediaRating != null and conteudo.mediaRating > 0}"
+                         th:with="fullStars=${T(java.lang.Math).round(conteudo.mediaRating)}, emptyStars=${5 - T(java.lang.Math).round(conteudo.mediaRating)}">
+                        <span class="stars" th:text="${#strings.repeat('★', fullStars) + #strings.repeat('☆', emptyStars)}"></span>
+                        <span class="score" th:text="${#numbers.formatDecimal(conteudo.mediaRating, 1, 1)}"></span>
+                    </div>
+                    <div class="movie-details">
+                        <span class="year" th:text="${conteudo.anoLancamento}"></span>
+                    </div>
+                    <div class="movie-genres" th:if="${conteudo.listaGeneros != null and not #lists.isEmpty(conteudo.listaGeneros)}">
+                        <span th:each="genero : ${conteudo.listaGeneros}" class="genre-tag" th:text="${genero}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div th:replace="~{index :: footer}"></div>
+
+<div id="movieModal" class="modal"></div>
+<div th:replace="~{index :: signUpModal}"></div>
+<div th:replace="~{index :: signInModal}"></div>
+
+
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/auth.js}"></script>
+
+<script th:if="${usuarioLogado != null}">
+    window.movieData = window.movieData || {};
+    window.movieData.usuarioLogado = {
+        id: /*[[${usuarioLogado.id}]]*/ null,
+        nome: /*[[${usuarioLogado.nomeCompleto}]]*/ '',
+        email: /*[[${usuarioLogado.email}]]*/ '',
+        admin: /*[[${usuarioLogado.admin}]]*/ false
+    };
+</script>
+<script th:if="${usuarioLogado == null}">
+    window.movieData = window.movieData || {};
+    window.movieData.usuarioLogado = null;
+</script>
+
+</body>
+</html>

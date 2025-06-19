@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Gerenciar Conteúdo</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: var(--primary-bg); color: var(--text-primary); font-family: 'Inter', sans-serif; padding: 2rem; }
+        .admin-container { max-width: 960px; margin: 2rem auto; padding: 2rem; background-color: var(--secondary-bg); border-radius: 12px; border: 1px solid var(--border-color); }
+        .admin-header { text-align: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }
+        .admin-header h1 { font-size: 2.5rem; font-weight: 700; }
+        .admin-header h1 span { color: var(--accent-red); }
+        .admin-header p { color: var(--text-secondary); font-size: 1.1rem; }
+        .tab-nav { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 2rem; }
+        .tab-link { padding: 1rem 1.5rem; cursor: pointer; background: none; border: none; color: var(--text-secondary); font-size: 1.1rem; font-weight: 500; position: relative; transition: color 0.3s ease; }
+        .tab-link.active { color: var(--text-primary); font-weight: 600; }
+        .tab-link.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background-color: var(--accent-red); border-radius: 2px; }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .form-section { margin-bottom: 2.5rem; }
+        .form-section h4 { font-size: 1.25rem; color: var(--text-primary); padding-bottom: 0.75rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); font-weight: 600; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-secondary); font-size: 0.9rem; }
+        .form-input, .form-textarea, .form-select { width: 100%; padding: 0.8rem 1rem; background-color: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; font-size: 1rem; transition: all 0.3s ease; }
+        .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--accent-red); box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2); }
+        .file-input { display: none; }
+        .file-label { display: inline-block; padding: 0.8rem 1.2rem; cursor: pointer; background-color: #333; color: var(--text-secondary); border: 1px solid var(--border-color); border-radius: 6px; transition: all 0.3s ease; font-weight: 500; }
+        .file-label:hover { background-color: #444; color: var(--text-primary); }
+        .file-name { margin-left: 1rem; font-style: italic; font-size: 0.9rem; color: var(--text-secondary); }
+        .btn-submit { padding: 0.8rem 2rem; font-size: 1rem; font-weight: 600; background-color: var(--accent-red); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.3s ease; display: block; margin-left: auto; margin-top: 1rem; }
+        .btn-submit:hover { background-color: var(--accent-red-hover); transform: translateY(-2px); }
+        .success-message { color: #4caf50; background-color: rgba(76, 175, 80, 0.1); border: 1px solid #4caf50; padding: 1rem; border-radius: 6px; margin-bottom: 2rem; text-align: center; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="admin-header">
+        <div>
+            <h1>Painel de <span>Administrador</span></h1>
+            <p>Adicione novos filmes e séries ao catálogo.</p>
+        </div>
+
+        <div class="admin-header-actions">
+            <a th:href="@{/movies}" class="btn-home">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                </svg>
+                Home
+            </a>
+
+            <a th:href="@{/admin/usuarios}" class="btn-secondary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                Gerenciar Usuários
+            </a>
+        </div>
+    </div>
+</header>
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>Painel de <span>Administrador</span></h1>
+        <p>Adicione novos filmes e séries ao catálogo.</p>
+    </div>
+
+    <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+
+    <div class="tab-nav">
+        <button class="tab-link active" onclick="openTab(event, 'filmeTab')">Adicionar Filme</button>
+        <button class="tab-link" onclick="openTab(event, 'serieTab')">Adicionar Série</button>
+    </div>
+
+    <div id="filmeTab" class="tab-pane active">
+        <form th:action="@{/admin/content/filmes}" th:object="${filme}" method="post" enctype="multipart/form-data" class="admin-form">
+            <div class="form-section">
+                <h4>Informações Básicas</h4>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="filmeTitulo" class="form-label">Título:</label>
+                        <input type="text" id="filmeTitulo" th:field="*{titulo}" class="form-input" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="filmeAno" class="form-label">Ano de Lançamento:</label>
+                        <input type="number" id="filmeAno" th:field="*{anoLancamento}" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label for="filmeDuracao" class="form-label">Duração (minutos):</label>
+                        <input type="number" id="filmeDuracao" th:field="*{duracaoMinutos}" class="form-input" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-section">
+                <h4>Mídia</h4>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="posterFile" class="form-label">Imagem do Pôster (Card)</label>
+                        <input type="file" id="posterFile" name="posterFile" class="file-input" accept="image/*" />
+                        <label for="posterFile" class="file-label">Escolher Pôster...</label>
+                        <span class="file-name">Nenhum arquivo</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="bannerFile" class="form-label">Imagem do Banner (Fundo)</label>
+                        <input type="file" id="bannerFile" name="bannerFile" class="file-input" accept="image/*" />
+                        <label for="bannerFile" class="file-label">Escolher Banner...</label>
+                        <span class="file-name">Nenhum arquivo</span>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label for="filmeTrailer" class="form-label">ID do Vídeo do Trailer (YouTube):</label>
+                    <input type="text" id="filmeTrailer" th:field="*{urlTrailer}" class="form-input" />
+                </div>
+            </div>
+            <div class="form-section">
+                <h4>Detalhes Adicionais</h4>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="filmeGeneros" class="form-label">Gêneros (separados por vírgula):</label>
+                        <input type="text" id="filmeGeneros" name="generosCsv" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label for="filmeClassificacao" class="form-label">Classificação Indicativa:</label>
+                        <input type="text" id="filmeClassificacao" th:field="*{classificacaoIndicativa}" class="form-input" />
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label for="filmeDescricao" class="form-label">Descrição (Sinopse):</label>
+                    <textarea id="filmeDescricao" th:field="*{descricao}" rows="4" class="form-textarea"></textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label for="filmeDiretor" class="form-label">Diretor:</label>
+                    <input type="text" id="filmeDiretor" th:field="*{diretor}" class="form-input"/>
+                </div>
+                <div class="form-group full-width">
+                    <label for="filmeElenco" class="form-label">Elenco (separado por vírgula):</label>
+                    <textarea id="filmeElenco" th:field="*{elenco}" class="form-textarea" rows="3"></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">Adicionar Filme</button>
+        </form>
+    </div>
+
+    <div id="serieTab" class="tab-pane">
+        <form th:action="@{/admin/content/series}" th:object="${serie}" method="post" enctype="multipart/form-data" class="admin-form">
+            <div class="form-section">
+                <h4>Informações Básicas</h4>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="serieTitulo">Título:</label>
+                        <input type="text" id="serieTitulo" th:field="*{titulo}" required class="form-input"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="serieAno">Ano de Lançamento:</label>
+                        <input type="number" id="serieAno" th:field="*{anoLancamento}" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label for="serieTemporadas">Nº de Temporadas:</label>
+                        <input type="number" id="serieTemporadas" th:field="*{numeroTemporadas}" class="form-input" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-section">
+                <h4>Mídia</h4>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="posterFileSerie" class="form-label">Imagem do Pôster (Card)</label>
+                        <input type="file" id="posterFileSerie" name="posterFileSerie" class="file-input" accept="image/*" />
+                        <label for="posterFileSerie" class="file-label">Escolher Pôster...</label>
+                        <span class="file-name">Nenhum arquivo</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="bannerFileSerie" class="form-label">Imagem do Banner (Fundo)</label>
+                        <input type="file" id="bannerFileSerie" name="bannerFileSerie" class="file-input" accept="image/*" />
+                        <label for="bannerFileSerie" class="file-label">Escolher Banner...</label>
+                        <span class="file-name">Nenhum arquivo</span>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label for="serieTrailer" class="form-label">ID do Vídeo do Trailer (YouTube):</label>
+                    <input type="text" id="serieTrailer" th:field="*{urlTrailer}" class="form-input" />
+                </div>
+            </div>
+            <div class="form-section">
+                <h4>Detalhes Adicionais</h4>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="serieGeneros">Gêneros (separados por vírgula):</label>
+                        <input type="text" id="serieGeneros" name="generosCsvSerie" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label for="serieStatus" class="form-label">Status:</label>
+                        <select id="serieStatus" th:field="*{status}" class="form-select">
+                            <option value="EM_ANDAMENTO">Em Andamento</option>
+                            <option value="FINALIZADA">Finalizada</option>
+                            <option value="CANCELADA">Cancelada</option>
+                            <option value="HIATO">Hiato</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label for="serieDescricao" class="form-label">Descrição (Sinopse):</label>
+                    <textarea id="serieDescricao" th:field="*{descricao}" rows="4" class="form-textarea"></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">Adicionar Série</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openTab(evt, tabName) {
+        let i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-pane");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tab-link");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+    document.querySelectorAll('.file-input').forEach(input => {
+        input.addEventListener('change', function() {
+            const fileName = this.files[0] ? this.files[0].name : "Nenhum arquivo";
+            // Acha o span vizinho à label do input
+            const nextSpan = this.nextElementSibling.nextElementSibling;
+            if (nextSpan && nextSpan.classList.contains('file-name')) {
+                nextSpan.textContent = fileName;
+            }
+        });
+    });
+</script>
+<style>
+    .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .admin-header-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .btn-home {
+        background: linear-gradient(135deg, var(--accent-red), #f40612);
+        color: white;
+        text-decoration: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-home:hover {
+        background: linear-gradient(135deg, #f40612, #c82333);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        text-decoration: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        /*transform: translateY(-2px);*/
+        color: var(--text-primary);
+        text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+        .admin-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .admin-header-actions {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+</body>
+</html>

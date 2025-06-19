@@ -1,0 +1,245 @@
+.movie-hero {
+    position: relative;
+    width: 100%;
+    min-height: 600px;
+    margin-top: 70px;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.3) 0%,
+            rgba(0, 0, 0, 0.7) 50%,
+            rgba(10, 10, 10, 1) 100%
+    );
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+}
+
+.movie-poster-detail {
+    flex-shrink: 0;
+}
+
+.movie-poster-detail img {
+    width: 300px;
+    height: 450px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.movie-info-detail {
+    flex: 1;
+}
+
+.movie-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.movie-meta-detail {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.movie-meta-detail .rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.movie-meta-detail .stars {
+    color: #ffd700;
+    font-size: 1.2rem;
+}
+
+.movie-meta-detail .score {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.movie-meta-detail .year,
+.movie-meta-detail .duration {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.movie-meta-detail .genre {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    backdrop-filter: blur(10px);
+}
+
+.movie-overview {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    max-width: 800px;
+}
+
+.movie-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.movie-details-main {
+    background-color: var(--primary-bg);
+    padding: 3rem 0;
+}
+
+.details-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.details-section {
+    margin-bottom: 4rem;
+}
+
+.details-section h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.details-section p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+}
+
+.cast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.cast-member {
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.cast-member:hover {
+    transform: translateY(-5px);
+}
+
+.cast-member img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cast-member h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.cast-member p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.no-reviews {
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+    padding: 3rem 0;
+}
+
+@media (max-width: 1024px) {
+    .hero-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .movie-poster-detail img {
+        width: 250px;
+        height: 375px;
+    }
+
+    .movie-title {
+        font-size: 2.5rem;
+    }
+
+    .movie-meta-detail {
+        justify-content: center;
+    }
+
+    .movie-actions {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .movie-hero {
+        min-height: auto;
+    }
+
+    .hero-content {
+        padding: 2rem 1rem;
+    }
+
+    .movie-poster-detail img {
+        width: 200px;
+        height: 300px;
+    }
+
+    .movie-title {
+        font-size: 2rem;
+    }
+
+    .movie-overview {
+        font-size: 1rem;
+    }
+
+    .cast-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .cast-member img {
+        width: 80px;
+        height: 80px;
+    }
+}
