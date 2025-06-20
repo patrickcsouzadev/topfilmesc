@@ -1,4 +1,3 @@
-```markdown
 # TopFilmesBrasil - Plataforma de Reviews de Filmes e Séries
 
 ![TopFilmesBrasil Screenshot](https://i.imgur.com/gA3q3Uq.jpeg) ## 📜 Descrição
