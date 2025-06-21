@@ -1,6 +1,6 @@
 # TopFilmesBrasil - Plataforma de Reviews de Filmes e Séries
-
-![TopFilmesBrasil Screenshot](https://i.imgur.com/gA3q3Uq.jpeg) ## 📜 Descrição
+ 
+## 📜 Descrição
 
 **TopFilmesBrasil** é uma aplicação web completa, desenvolvida com Spring Boot e Thymeleaf, que serve como uma plataforma para usuários descobrirem, avaliarem e favoritarem filmes e séries. O projeto conta com um sistema de autenticação robusto, painel administrativo para gerenciamento de conteúdo e usuários, e uma interface dinâmica e interativa para o usuário final.
 
@@ -58,7 +58,7 @@ Siga os passos abaixo para configurar e executar o projeto no seu ambiente de de
 
 ### 1. Clonar o Repositório
 ```bash
-git clone [URL_DO_SEU_REPOSITORIO_NO_GITHUB]
+git clone [URL_DO_REPOSITORIO_NO_GITHUB]
 cd [NOME_DO_PROJETO]
 ```
 
