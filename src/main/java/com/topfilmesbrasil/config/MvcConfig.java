@@ -1,4 +1,4 @@
-// Este arquivo tem a função especifica de configurar como o Spring MVC lida coms recursos estátivos.
+// Este arquivo tem a função especifica de configurar como o Spring MVC lida com recursos estáticos.
 // Principalmente aqueles que não estão dentro das pastas padrão do projeto.
 
 package com.topfilmesbrasil.config;

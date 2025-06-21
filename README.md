@@ -125,6 +125,27 @@ com.topfilmesbrasil
 ```
 
 ---
+
+## 🏛️ Arquitetura
+
+O projeto utiliza uma arquitetura MVC (Model-View-Controller) com uma camada de serviço para a lógica de negócio.
+
+* **`controller`**: Responsável por receber as requisições HTTP e direcionar para os serviços apropriados.
+* **`service`**: Contém a lógica de negócio principal da aplicação.
+* **`repository`**: Define a camada de acesso aos dados, usando Spring Data JPA.
+* **`model`**: Representa as entidades do banco de dados (tabelas).
+* **`dto`**: Objetos de Transferência de Dados, usados para comunicar de forma segura entre as camadas e com o frontend.
+* **`config`**: Configurações de segurança e inicialização de dados.
+
+---
+
+### 🐘 Modelo do Banco de Dados
+
+Abaixo está o diagrama entidade-relacionamento que representa a estrutura do banco de dados da aplicação.
+
+![Diagrama do Banco de Dados](docs/diagramatopfilmes.png)
+
+---
 ## 🗺️ Endpoints da API (Exemplos)
 
 | Método | Endpoint                      | Descrição                       | Acesso        |
@@ -136,6 +157,23 @@ com.topfilmesbrasil
 | `GET`  | `/api/favoritos`              | Lista os favoritos do usuário.  | Autenticado   |
 | `POST` | `/reviews/api/filme/{id}`     | Adiciona um review a um filme.  | Autenticado   |
 
+
+---
+
+---
+
+## 📄 Documentação da API (Swagger)
+
+Este projeto utiliza o Springdoc (Swagger) para gerar uma documentação interativa da API REST. Com ela, é possível visualizar todos os endpoints disponíveis, seus parâmetros, os objetos que eles esperam e retornam, além de permitir o teste das requisições diretamente pelo navegador.
+
+### Como Acessar
+
+1.  Com a aplicação rodando localmente, acesse a seguinte URL no seu navegador:
+    [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+
+2.  Você verá uma interface onde poderá explorar e testar todos os endpoints da API.
+
+![Pré-visualização do Swagger UI](docs/swagger-preview.png)
 
 ---
 

@@ -71,7 +71,7 @@ public class DataInitializer implements CommandLineRunner { // Essa interface es
 
             Filme shawshank = new Filme();
             shawshank.setTitulo("The Shawshank Redemption");
-            shawshank.setEmDestaque(true); // <-- GARANTA QUE ESTA LINHA EXISTA
+            shawshank.setEmDestaque(true);
             shawshank.setDescricao("Dois homens encarcerados se vinculam ao longo de vários anos, encontrando consolo e eventual redenção por meio de atos de decência comum.");
             shawshank.setAnoLancamento(1994);
             shawshank.setGenero("Drama");
@@ -87,7 +87,7 @@ public class DataInitializer implements CommandLineRunner { // Essa interface es
 
             Filme pulpFiction = new Filme();
             pulpFiction.setTitulo("Pulp Fiction");
-            pulpFiction.setEmDestaque(true); // <-- GARANTA QUE ESTA LINHA EXISTA
+            pulpFiction.setEmDestaque(true);
             pulpFiction.setDescricao("As vidas de dois assassinos da máfia, um boxeador, a esposa de um gângster e um par de bandidos de lanchonete se entrelaçam em quatro contos de violência e redenção.");
             pulpFiction.setAnoLancamento(1994);
             pulpFiction.setGenero("Crime");
@@ -105,7 +105,7 @@ public class DataInitializer implements CommandLineRunner { // Essa interface es
         if (serieRepository.count() == 0) {
             Serie breakingBad = new Serie();
             breakingBad.setTitulo("Breaking Bad");
-            breakingBad.setEmDestaque(true); // <-- GARANTA QUE ESTA LINHA EXISTA
+            breakingBad.setEmDestaque(true);
             breakingBad.setDescricao("Um professor de química do ensino médio diagnosticado com câncer terminal se une a um ex-aluno para produzir e vender metanfetamina de alta qualidade.");
             breakingBad.setAnoLancamento(2008);
             breakingBad.setGenero("Crime");
