@@ -206,6 +206,15 @@ public class FavoritoServiceImpl implements FavoritoService {
                 favorito.getDataAdicao()
         );
         dto.setListaGeneros(listaGeneros);
+        
+        // Definir IDs específicos para filmes e séries
+        if (favorito.getFilme() != null) {
+            dto.setFilmeId(favorito.getFilme().getId());
+            dto.setSerieId(null);
+        } else {
+            dto.setFilmeId(null);
+            dto.setSerieId(favorito.getSerie().getId());
+        }
 
         return dto;
     }

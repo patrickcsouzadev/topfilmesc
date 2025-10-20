@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minha Lista - Top Filmes Brasil</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <link rel="stylesheet" th:href="@{/css/modal.css}" />
+  <link rel="stylesheet" th:href="@{/css/auth.css}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body th:data-user-logged="${usuarioLogado != null}"
+      th:data-user-admin="${usuarioLogado != null and usuarioLogado.admin}"
+      th:data-user-id="${usuarioLogado != null ? usuarioLogado.id : ''}">
+
+<header class="header" th:fragment="header">
+  <div class="header-container">
+    <div class="logo">
+      <h1><a th:href="@{/movies}" style="text-decoration: none; color: inherit;">Top<span>FilmesBrasil</span></a></h1>
+    </div>
+    <nav class="nav-menu">
+      <a th:href="@{/movies}" class="nav-link">Home</a>
+      <a th:href="@{/filmes}" class="nav-link">Filmes</a>
+      <a th:href="@{/series}" class="nav-link">Séries</a>
+      <a th:href="@{/releases}" class="nav-link">Releases</a>
+      <a th:href="@{/top-rated}" class="nav-link">Top Avaliados</a>
+      <a th:href="@{/favoritos}" class="nav-link" sec:authorize="isAuthenticated()">Meus Favoritos</a>
+
+      <a th:if="${usuarioLogado != null and usuarioLogado.admin}"
+         th:href="@{/admin/content/add}"
+         class="nav-link admin-link"
+         style="color: var(--accent-red);">
+        🛡️ Admin
+      </a>
+    </nav>
+    <div class="header-actions">
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="Busque filmes e séries..." />
+        <button class="search-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div th:if="${usuarioLogado != null}" class="user-menu">
+        <button class="user-menu-toggle">
+          <span class="user-name" th:text="${usuarioLogado.nomeCompleto}">Nome do Usuário</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="user-dropdown">
+          <div class="user-info">
+            <span th:text="${usuarioLogado.nomeCompleto}">Nome do Usuário</span>
+            <small th:text="${usuarioLogado.email}">email@exemplo.com</small>
+            <span th:if="${usuarioLogado.admin}" class="admin-badge" style="margin-top: 0.5rem;">🛡️ Administrador</span>
+          </div>
+          <div class="dropdown-divider"></div>
+
+          <div th:if="${usuarioLogado.admin}" class="admin-menu-section">
+            <h4 style="color: var(--accent-red); font-size: 0.85rem; margin: 0.5rem 0;">Administração</h4>
+            <a th:href="@{/admin/content/add}" class="dropdown-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+              Adicionar Conteúdo
+            </a>
+            <a th:href="@{/admin/usuarios}" class="dropdown-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              Gerenciar Usuários
+            </a>
+            <div class="dropdown-divider"></div>
+          </div>
+
+          <a href="/profile" class="dropdown-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            Meu Perfil
+          </a>
+          <a href="/watchlist" class="dropdown-item active">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Minha Lista
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="/usuarios/logout" class="dropdown-item logout">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Sair
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main-content" style="padding-top: 2rem;">
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">Minha Lista</h1>
+      <p class="page-subtitle">Seus filmes e séries favoritos organizados em um só lugar</p>
+    </div>
+
+    <!-- Estatísticas -->
+    <section class="content-section" th:if="${temFavoritos}">
+      <div class="stats-card">
+        <div class="stat-item">
+          <div class="stat-number" th:text="${totalFavoritos}">0</div>
+          <div class="stat-label">Total de Itens</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" th:text="${#lists.size(filmesFavoritos)}">0</div>
+          <div class="stat-label">Filmes</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" th:text="${#lists.size(seriesFavoritas)}">0</div>
+          <div class="stat-label">Séries</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filmes -->
+    <section class="content-section" th:if="${not #lists.isEmpty(filmesFavoritos)}">
+      <h2 class="section-title">🎬 Filmes</h2>
+      <div class="movies-grid">
+        <div th:each="filme : ${filmesFavoritos}" class="movie-card"
+             th:attr="data-movie-id=${filme.filmeId}, data-content-type='filme'">
+
+          <div class="movie-poster">
+            <img th:src="${filme.urlPoster != null ? filme.urlPoster : '/images/no-poster.jpg'}" 
+                 th:alt="${filme.titulo}" />
+            <div class="movie-overlay">
+              <button class="play-btn">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="movie-info">
+            <h3 class="movie-name" th:text="${filme.titulo}"></h3>
+            <div class="movie-rating"
+                 th:if="${filme.mediaRating != null and filme.mediaRating > 0}"
+                 th:with="fullStars=${T(java.lang.Math).round(filme.mediaRating)}, emptyStars=${5 - T(java.lang.Math).round(filme.mediaRating)}">
+              <span class="stars" th:text="${#strings.repeat('★', fullStars) + #strings.repeat('☆', emptyStars)}"></span>
+              <span class="score" th:text="${#numbers.formatDecimal(filme.mediaRating, 1, 1)}"></span>
+            </div>
+            <div class="movie-details">
+              <span class="year" th:text="${filme.anoLancamento}"></span>
+            </div>
+            <div class="movie-genres">
+              <span th:each="generoTag : ${filme.listaGeneros}" class="genre-tag" th:text="${generoTag}"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Séries -->
+    <section class="content-section" th:if="${not #lists.isEmpty(seriesFavoritas)}">
+      <h2 class="section-title">📺 Séries</h2>
+      <div class="movies-grid">
+        <div th:each="serie : ${seriesFavoritas}" class="movie-card"
+             th:attr="data-show-id=${serie.serieId}, data-content-type='serie'">
+
+          <div class="movie-poster">
+            <img th:src="${serie.urlPoster != null ? serie.urlPoster : '/images/no-poster.jpg'}" 
+                 th:alt="${serie.titulo}" />
+            <div class="movie-overlay">
+              <button class="play-btn">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="movie-info">
+            <h3 class="movie-name" th:text="${serie.titulo}"></h3>
+            <div class="movie-rating"
+                 th:if="${serie.mediaRating != null and serie.mediaRating > 0}"
+                 th:with="fullStars=${T(java.lang.Math).round(serie.mediaRating)}, emptyStars=${5 - T(java.lang.Math).round(serie.mediaRating)}">
+              <span class="stars" th:text="${#strings.repeat('★', fullStars) + #strings.repeat('☆', emptyStars)}"></span>
+              <span class="score" th:text="${#numbers.formatDecimal(serie.mediaRating, 1, 1)}"></span>
+            </div>
+            <div class="movie-details">
+              <span class="year" th:text="${serie.anoLancamento}"></span>
+            </div>
+            <div class="movie-genres">
+              <span th:each="generoTag : ${serie.listaGeneros}" class="genre-tag" th:text="${generoTag}"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mensagem quando não há favoritos -->
+    <section class="content-section" th:if="${not temFavoritos}">
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h3>Sua lista está vazia</h3>
+        <p>Comece adicionando filmes e séries aos seus favoritos para criar sua lista pessoal.</p>
+        <a th:href="@{/movies}" class="btn-primary">Explorar Catálogo</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div id="movieModal" class="modal">
+  <div class="modal-content">
+    <button class="modal-close">&times;</button>
+    <div class="modal-body">
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/auth.js}"></script>
+
+<script th:if="${usuarioLogado != null}">
+  window.movieData = window.movieData || {};
+  window.movieData.usuarioLogado = {
+    id: /*[[${usuarioLogado.id}]]*/ null,
+    nome: /*[[${usuarioLogado.nomeCompleto}]]*/ '',
+    email: /*[[${usuarioLogado.email}]]*/ '',
+    admin: /*[[${usuarioLogado.admin}]]*/ false,
+    role: /*[[${usuarioLogado.role?.name()}]]*/ 'ROLE_USER'
+  };
+</script>
+
+<style>
+.stats-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent-color);
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.dropdown-item.active {
+  background: var(--accent-color);
+  color: white;
+}
+</style>
+
+</body>
+</html>

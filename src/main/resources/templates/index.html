@@ -29,8 +29,8 @@
         <a th:href="@{/filmes}" class="nav-link">Filmes</a>
         <a th:href="@{/series}" class="nav-link">Séries</a>
       </nav>
-      <a href="#" class="nav-link">Releases</a>
-      <a href="#" class="nav-link">Top Avaliados</a>
+      <a th:href="@{/releases}" class="nav-link">Releases</a>
+      <a th:href="@{/top-rated}" class="nav-link">Top Avaliados</a>
       <a th:href="@{/favoritos}" class="nav-link" sec:authorize="isAuthenticated()">Meus Favoritos</a>
 
       <a th:if="${usuarioLogado != null and usuarioLogado.admin}"
@@ -91,14 +91,14 @@
             <div class="dropdown-divider"></div>
           </div>
 
-          <a href="/profile" class="dropdown-item">
+          <a th:href="@{/profile}" class="dropdown-item">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
             Meu Perfil
           </a>
-          <a href="/watchlist" class="dropdown-item">
+          <a th:href="@{/watchlist}" class="dropdown-item">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
             </svg>

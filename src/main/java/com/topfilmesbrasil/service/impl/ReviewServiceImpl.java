@@ -27,7 +27,6 @@ public class ReviewServiceImpl implements ReviewService {
     private final FilmeRepository filmeRepository;
     private final SerieRepository serieRepository;
 
-    @Autowired
     public ReviewServiceImpl(ReviewRepository reviewRepository, UsuarioRepository usuarioRepository,
                              FilmeRepository filmeRepository, SerieRepository serieRepository) {
         this.reviewRepository = reviewRepository;
@@ -50,9 +49,11 @@ public class ReviewServiceImpl implements ReviewService {
         if (review.getFilme() != null) {
             dto.setConteudoId(review.getFilme().getId());
             dto.setTipoConteudo("filme");
+            dto.setTituloConteudo(review.getFilme().getTitulo());
         } else if (review.getSerie() != null) {
             dto.setConteudoId(review.getSerie().getId());
             dto.setTipoConteudo("serie");
+            dto.setTituloConteudo(review.getSerie().getTitulo());
         }
         return dto;
     }
@@ -100,6 +101,13 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<ReviewDTO> getReviewsBySerieId(Long serieId) {
         return reviewRepository.findBySerieIdOrderByDataCriacaoDesc(serieId).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ReviewDTO> getReviewsByUsuarioEmail(String emailUsuario) {
+        return reviewRepository.findByUsuarioEmailOrderByDataCriacaoDesc(emailUsuario).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }

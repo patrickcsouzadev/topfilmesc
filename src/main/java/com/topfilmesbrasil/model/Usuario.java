@@ -41,6 +41,9 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private boolean ativo = true;
 
+    @Column(nullable = false)
+    private boolean emailVerificado = false;
+
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Review> reviews = new HashSet<>();
 
@@ -66,6 +69,8 @@ public class Usuario implements UserDetails {
     public void setRole(Role role) { this.role = role; }
     public boolean isAtivo() { return ativo; }
     public void setAtivo(boolean ativo) { this.ativo = ativo; }
+    public boolean isEmailVerificado() { return emailVerificado; }
+    public void setEmailVerificado(boolean emailVerificado) { this.emailVerificado = emailVerificado; }
     public Set<Review> getReviews() { return reviews; }
     public void setReviews(Set<Review> reviews) { this.reviews = reviews; }
 
@@ -94,5 +99,5 @@ public class Usuario implements UserDetails {
     public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() { return this.ativo; }
+    public boolean isEnabled() { return this.ativo && this.emailVerificado; }
 }

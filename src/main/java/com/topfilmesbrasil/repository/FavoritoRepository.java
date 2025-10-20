@@ -43,4 +43,8 @@ public interface FavoritoRepository extends JpaRepository<Favorito, Long> {
     // Deletar favorito específico
     void deleteByUsuarioIdAndFilmeId(Long usuarioId, Long filmeId);
     void deleteByUsuarioIdAndSerieId(Long usuarioId, Long serieId);
+    
+    // Deletar todos os favoritos de um usuário
+    @Transactional
+    void deleteByUsuarioId(Long usuarioId);
 }

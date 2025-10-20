@@ -7,6 +7,7 @@ public class ReviewDTO {
     private UsuarioDTO usuario;
     private Long conteudoId;
     private String tipoConteudo; // "filme" ou "serie"
+    private String tituloConteudo; // Título do filme ou série
     private Integer rating;
     private String comentario;
     private LocalDateTime dataCriacao;
@@ -41,6 +42,14 @@ public class ReviewDTO {
 
     public void setTipoConteudo(String tipoConteudo) {
         this.tipoConteudo = tipoConteudo;
+    }
+
+    public String getTituloConteudo() {
+        return tituloConteudo;
+    }
+
+    public void setTituloConteudo(String tituloConteudo) {
+        this.tituloConteudo = tituloConteudo;
     }
 
     public Integer getRating() {

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erro na Verificação - Top Filmes Brasil</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .error-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .error-icon {
+            font-size: 4rem;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        
+        .error-title {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        
+        .error-message {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .btn-resend {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s;
+            margin-right: 15px;
+        }
+        
+        .btn-resend:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-home {
+            background: #6c757d;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        
+        .btn-home:hover {
+            transform: translateY(-2px);
+        }
+        
+        .resend-form {
+            margin-top: 20px;
+        }
+        
+        .resend-form input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+            width: 250px;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">✗</div>
+        <h1 class="error-title">Erro na Verificação</h1>
+        <p class="error-message">
+            O link de verificação é inválido ou expirou.<br>
+            Tokens de verificação são válidos por apenas 24 horas.
+        </p>
+        
+        <div class="resend-form">
+            <p><strong>Reenviar email de verificação:</strong></p>
+            <input type="email" id="emailInput" placeholder="Digite seu email" required>
+            <button onclick="reenviarVerificacao()" class="btn-resend">Reenviar</button>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <a href="/" class="btn-home">Voltar ao Início</a>
+        </div>
+    </div>
+
+    <script>
+        function reenviarVerificacao() {
+            const email = document.getElementById('emailInput').value;
+            
+            if (!email) {
+                alert('Por favor, digite seu email');
+                return;
+            }
+            
+            fetch('/api/resend-verification', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Email de verificação reenviado com sucesso!');
+                } else {
+                    alert('Erro: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Erro ao reenviar email: ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html>
+

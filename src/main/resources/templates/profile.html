@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meu Perfil - Top Filmes Brasil</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <link rel="stylesheet" th:href="@{/css/modal.css}" />
+  <link rel="stylesheet" th:href="@{/css/auth.css}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body th:data-user-logged="${usuarioLogado != null}"
+      th:data-user-admin="${usuarioLogado != null and usuarioLogado.admin}"
+      th:data-user-id="${usuarioLogado != null ? usuarioLogado.id : ''}">
+
+<header class="header" th:fragment="header">
+  <div class="header-container">
+    <div class="logo">
+      <h1><a th:href="@{/movies}" style="text-decoration: none; color: inherit;">Top<span>FilmesBrasil</span></a></h1>
+    </div>
+    <nav class="nav-menu">
+      <a th:href="@{/movies}" class="nav-link">Home</a>
+      <a th:href="@{/filmes}" class="nav-link">Filmes</a>
+      <a th:href="@{/series}" class="nav-link">Séries</a>
+      <a th:href="@{/releases}" class="nav-link">Releases</a>
+      <a th:href="@{/top-rated}" class="nav-link">Top Avaliados</a>
+      <a th:href="@{/favoritos}" class="nav-link" sec:authorize="isAuthenticated()">Meus Favoritos</a>
+
+      <a th:if="${usuarioLogado != null and usuarioLogado.admin}"
+         th:href="@{/admin/content/add}"
+         class="nav-link admin-link"
+         style="color: var(--accent-red);">
+        🛡️ Admin
+      </a>
+    </nav>
+    <div class="header-actions">
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="Busque filmes e séries..." />
+        <button class="search-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div th:if="${usuarioLogado != null}" class="user-menu">
+        <button class="user-menu-toggle">
+          <span class="user-name" th:text="${usuarioLogado.nomeCompleto}">Nome do Usuário</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="user-dropdown">
+          <div class="user-info">
+            <span th:text="${usuarioLogado.nomeCompleto}">Nome do Usuário</span>
+            <small th:text="${usuarioLogado.email}">email@exemplo.com</small>
+            <span th:if="${usuarioLogado.admin}" class="admin-badge" style="margin-top: 0.5rem;">🛡️ Administrador</span>
+          </div>
+          <div class="dropdown-divider"></div>
+
+          <div th:if="${usuarioLogado.admin}" class="admin-menu-section">
+            <h4 style="color: var(--accent-red); font-size: 0.85rem; margin: 0.5rem 0;">Administração</h4>
+            <a th:href="@{/admin/content/add}" class="dropdown-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+              Adicionar Conteúdo
+            </a>
+            <a th:href="@{/admin/usuarios}" class="dropdown-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              Gerenciar Usuários
+            </a>
+            <div class="dropdown-divider"></div>
+          </div>
+
+          <a href="/profile" class="dropdown-item active">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            Meu Perfil
+          </a>
+          <a href="/watchlist" class="dropdown-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Minha Lista
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="/usuarios/logout" class="dropdown-item logout">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Sair
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main-content" style="padding-top: 2rem;">
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">Meu Perfil</h1>
+      <p class="page-subtitle">Gerencie suas informações e acompanhe sua atividade</p>
+    </div>
+
+    <!-- Informações do Usuário -->
+    <section class="content-section">
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-avatar">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div class="profile-info">
+            <h2 th:text="${usuario.nomeCompleto}">Nome do Usuário</h2>
+            <p th:text="${usuario.email}">email@exemplo.com</p>
+            <span th:if="${usuarioLogado.admin}" class="admin-badge">🛡️ Administrador</span>
+          </div>
+        </div>
+        
+        <div class="profile-stats">
+          <div class="stat-item">
+            <div class="stat-number" th:text="${totalFavoritos}">0</div>
+            <div class="stat-label">Favoritos</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" th:text="${totalReviews}">0</div>
+            <div class="stat-label">Reviews</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" th:text="${#numbers.formatDecimal(mediaAvaliacoes, 1, 1)}">0.0</div>
+            <div class="stat-label">Média de Avaliações</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Favoritos Recentes -->
+    <section class="content-section" th:if="${temFavoritos}">
+      <h2 class="section-title">❤️ Meus Favoritos Recentes</h2>
+      <div class="movies-grid">
+        <div th:each="favorito : ${favoritos}" class="movie-card"
+             th:attr="data-movie-id=${favorito.filmeId != null ? favorito.filmeId : null}, 
+                     data-show-id=${favorito.serieId != null ? favorito.serieId : null}, 
+                     data-content-type=${favorito.filmeId != null ? 'filme' : 'serie'}">
+
+          <div class="movie-poster">
+            <img th:src="${favorito.urlPoster != null ? favorito.urlPoster : '/images/no-poster.jpg'}" 
+                 th:alt="${favorito.titulo}" />
+            <div class="movie-overlay">
+              <button class="play-btn">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="movie-info">
+            <h3 class="movie-name" th:text="${favorito.titulo}"></h3>
+            <div class="movie-rating"
+                 th:if="${favorito.mediaRating != null and favorito.mediaRating > 0}"
+                 th:with="fullStars=${T(java.lang.Math).round(favorito.mediaRating)}, emptyStars=${5 - T(java.lang.Math).round(favorito.mediaRating)}">
+              <span class="stars" th:text="${#strings.repeat('★', fullStars) + #strings.repeat('☆', emptyStars)}"></span>
+              <span class="score" th:text="${#numbers.formatDecimal(favorito.mediaRating, 1, 1)}"></span>
+            </div>
+            <div class="movie-details">
+              <span class="year" th:text="${favorito.anoLancamento}"></span>
+            </div>
+            <div class="movie-genres">
+              <span th:each="generoTag : ${favorito.listaGeneros}" class="genre-tag" th:text="${generoTag}"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section-footer">
+        <a th:href="@{/favoritos}" class="btn-secondary">Ver Todos os Favoritos</a>
+      </div>
+    </section>
+
+    <!-- Reviews Recentes -->
+    <section class="content-section" th:if="${temReviews}">
+      <h2 class="section-title">📝 Meus Reviews Recentes</h2>
+      <div class="reviews-list">
+        <div th:each="review : ${reviews}" class="review-item">
+          <div class="review-header">
+            <h4 th:text="${review.tituloConteudo}">Título do Conteúdo</h4>
+            <div class="review-rating">
+              <span class="stars" th:text="${#strings.repeat('★', review.rating) + #strings.repeat('☆', 5 - review.rating)}"></span>
+              <span class="rating-number" th:text="${review.rating}"></span>
+            </div>
+          </div>
+          <p class="review-comment" th:text="${review.comentario}">Comentário do review</p>
+          <div class="review-meta">
+            <span class="review-date" th:text="${#temporals.format(review.dataCriacao, 'dd/MM/yyyy HH:mm')}">Data</span>
+            <span class="review-type" th:text="${review.tipoConteudo == 'filme' ? '🎬 Filme' : '📺 Série'}">Tipo</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mensagem quando não há atividade -->
+    <section class="content-section" th:if="${not temFavoritos and not temReviews}">
+      <div class="empty-state">
+        <div class="empty-icon">👤</div>
+        <h3>Nenhuma atividade encontrada</h3>
+        <p>Você ainda não tem favoritos ou reviews. Comece explorando nosso catálogo!</p>
+        <a th:href="@{/movies}" class="btn-primary">Explorar Catálogo</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div id="movieModal" class="modal">
+  <div class="modal-content">
+    <button class="modal-close">&times;</button>
+    <div class="modal-body">
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/auth.js}"></script>
+
+<script th:if="${usuarioLogado != null}">
+  window.movieData = window.movieData || {};
+  window.movieData.usuarioLogado = {
+    id: /*[[${usuarioLogado.id}]]*/ null,
+    nome: /*[[${usuarioLogado.nomeCompleto}]]*/ '',
+    email: /*[[${usuarioLogado.email}]]*/ '',
+    admin: /*[[${usuarioLogado.admin}]]*/ false,
+    role: /*[[${usuarioLogado.role?.name()}]]*/ 'ROLE_USER'
+  };
+</script>
+
+<style>
+.profile-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  background: var(--accent-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.profile-info h2 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.profile-info p {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-secondary);
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent-color);
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.review-item {
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.review-header h4 {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.review-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.review-rating .stars {
+  color: #ffd700;
+  font-size: 1.2rem;
+}
+
+.review-rating .rating-number {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.review-comment {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.review-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.section-footer {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.dropdown-item.active {
+  background: var(--accent-color);
+  color: white;
+}
+</style>
+
+</body>
+</html>

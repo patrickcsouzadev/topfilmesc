@@ -32,24 +32,18 @@ public class DataInitializer implements CommandLineRunner { // Essa interface es
 
     @Override
     public void run(String... args) throws Exception {  // méto.do está sobrescrevendo o méto.do run da interface CommandLineRunner
-        // Insere usuários iniciais se a tabela estiver vazia
-        if (usuarioRepository.count() == 0) {
-            // Admin
-            Usuario admin = new Usuario();
-            admin.setNomeCompleto("Administrador do Sistema");
-            admin.setEmail("admin@topfilmesbrasil.com");
-            admin.setSenha(passwordEncoder.encode("admin")); // Onde definimos que a senha não é salva no banco como texto simples e sim em um hash criptografado. Quando o admin tentar fazer login, o Spring Security fará o hash da senha digitada e comparará os hashes, não as senhas.
-            admin.setRole(Role.ROLE_ADMIN); // define a permissão desse usuário como ADMIN. Com isso ele tem acesso às páginas e funcionalidades de administração, conforme definido no SecurityConfig.java
-            usuarioRepository.save(admin);
-
-            // User
-            Usuario user = new Usuario();
-            user.setNomeCompleto("Usuário Comum");
-            user.setEmail("user@topfilmesbrasil.com");
-            user.setSenha(passwordEncoder.encode("user"));
-            user.setRole(Role.ROLE_USER); // Define a permissão desse usuário como USER. Com isso ele tem acesso às páginas e funcionalidades de usuário comum, conforme definido no SecurityConfig.java
-            usuarioRepository.save(user);
-        }
+        // Limpa todos os usuários existentes e cria apenas o admin
+        usuarioRepository.deleteAll();
+        
+        // Admin - único usuário com acesso privilegiado
+        Usuario admin = new Usuario();
+        admin.setNomeCompleto("Administrador do Sistema");
+        admin.setEmail("ptkbabayaga@gmail.com");
+        admin.setSenha(passwordEncoder.encode("2508Ptk*")); // Senha do admin
+        admin.setRole(Role.ROLE_ADMIN); // define a permissão desse usuário como ADMIN
+        admin.setAtivo(true);
+        admin.setEmailVerificado(true); // Admin já tem email verificado
+        usuarioRepository.save(admin);
 
         // Insere filmes iniciais se a tabela estiver vazia
         if (filmeRepository.count() == 0) {

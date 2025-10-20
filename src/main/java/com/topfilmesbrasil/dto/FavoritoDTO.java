@@ -8,6 +8,8 @@ public class FavoritoDTO {
     private Long usuarioId;
     private Long conteudoId;
     private String tipoConteudo;
+    private Long filmeId; // ID do filme se for um filme favorito
+    private Long serieId; // ID da série se for uma série favorita
     private String titulo;
     private String urlPoster;
     private Integer anoLancamento;
@@ -42,6 +44,12 @@ public class FavoritoDTO {
 
     public String getTipoConteudo() { return tipoConteudo; }
     public void setTipoConteudo(String tipoConteudo) { this.tipoConteudo = tipoConteudo; }
+
+    public Long getFilmeId() { return filmeId; }
+    public void setFilmeId(Long filmeId) { this.filmeId = filmeId; }
+
+    public Long getSerieId() { return serieId; }
+    public void setSerieId(Long serieId) { this.serieId = serieId; }
 
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }

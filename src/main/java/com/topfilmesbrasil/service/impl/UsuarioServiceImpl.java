@@ -5,7 +5,12 @@ import com.topfilmesbrasil.dto.UsuarioDTO;
 import com.topfilmesbrasil.model.Role;
 import com.topfilmesbrasil.model.Usuario;
 import com.topfilmesbrasil.repository.UsuarioRepository;
+import com.topfilmesbrasil.repository.FavoritoRepository;
+import com.topfilmesbrasil.repository.ReviewRepository;
+import com.topfilmesbrasil.repository.VerificationTokenRepository;
+import com.topfilmesbrasil.repository.PasswordResetTokenRepository;
 import com.topfilmesbrasil.service.UsuarioService;
+import com.topfilmesbrasil.service.VerificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,11 +28,24 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder; // Para hashear senhas
+    private final VerificationService verificationService;
+    private final FavoritoRepository favoritoRepository;
+    private final ReviewRepository reviewRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Autowired
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, 
+                             VerificationService verificationService, FavoritoRepository favoritoRepository,
+                             ReviewRepository reviewRepository, VerificationTokenRepository verificationTokenRepository,
+                             PasswordResetTokenRepository passwordResetTokenRepository) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.verificationService = verificationService;
+        this.favoritoRepository = favoritoRepository;
+        this.reviewRepository = reviewRepository;
+        this.verificationTokenRepository = verificationTokenRepository;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
     }
 
     @Override
@@ -41,7 +59,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setSenha(passwordEncoder.encode(registroDTO.getSenha())); // Hashear a senha
         usuario.setRole(Role.ROLE_USER); // Papel padrão para novos registros
         usuario.setAtivo(true);
-        return usuarioRepository.save(usuario);
+        usuario.setEmailVerificado(false); // Email não verificado inicialmente
+        
+        usuario = usuarioRepository.save(usuario);
+        
+        // Gerar e enviar token de verificação
+        verificationService.gerarTokenVerificacao(usuario);
+        
+        return usuario;
     }
 
     @Override
@@ -58,14 +83,24 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public void deletarUsuario(Long id) {
-        // Adicionar lógica de permissão aqui (só admin pode deletar)
-        // Poderia ser uma deleção lógica (setar ativo = false) ou física
+        // Buscar o usuário primeiro
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado com id: " + id));
-        // Se for deleção lógica:
-        // usuario.setAtivo(false);
-        // usuarioRepository.save(usuario);
-        // Se for deleção física:
+        
+        // Deletar todos os registros relacionados antes de deletar o usuário
+        // 1. Deletar tokens de verificação de email
+        verificationTokenRepository.deleteByUsuario(usuario);
+        
+        // 2. Deletar tokens de reset de senha
+        passwordResetTokenRepository.deleteByUsuario(usuario);
+        
+        // 3. Deletar reviews do usuário
+        reviewRepository.deleteByUsuarioId(id);
+        
+        // 4. Deletar favoritos do usuário
+        favoritoRepository.deleteByUsuarioId(id);
+        
+        // 5. Finalmente deletar o usuário
         usuarioRepository.deleteById(id);
     }
 

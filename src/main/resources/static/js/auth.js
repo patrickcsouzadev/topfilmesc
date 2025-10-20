@@ -30,6 +30,12 @@ function initializeAuth() {
     socialButtons.forEach(btn => {
         btn.addEventListener('click', handleSocialAuth);
     });
+
+    // Adicionar evento para o botão "Esqueci minha senha"
+    const forgotPasswordLink = document.querySelector('.forgot-password');
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', handleForgotPassword);
+    }
 }
 
 function showSignUpModal() {
@@ -99,7 +105,7 @@ async function handleSignUp(e) {
         const result = await response.json();
 
         if (response.ok) {
-            showMessage('signUpForm', 'Conta criada com sucesso! Redirecionando para o login...', 'success');
+            showMessage('signUpForm', 'Conta criada com sucesso! Verifique seu email para ativar a conta.', 'success');
             setTimeout(() => {
                 if (window.location.pathname.includes('/signup')) {
                     window.location.href = '/login';
@@ -107,7 +113,7 @@ async function handleSignUp(e) {
                     closeSignUpModal();
                     showSignInModal();
                 }
-            }, 1500);
+            }, 3000);
         } else {
             showMessage('signUpForm', result.error || 'Erro ao criar conta.', 'error');
         }
@@ -139,7 +145,12 @@ async function handleSignIn(e) {
                 window.location.href = '/movies';
             }, 1500);
         } else {
-            showMessage('signInForm', 'Email ou senha incorretos.', 'error');
+            const result = await response.json();
+            if (result.error && result.error.includes('verificado')) {
+                showMessage('signInForm', 'Sua conta não foi verificada. Verifique seu email antes de fazer login.', 'error');
+            } else {
+                showMessage('signInForm', 'Email ou senha incorretos.', 'error');
+            }
         }
     } catch (error) {
         showMessage('signInForm', 'Erro de conexão. Tente novamente.', 'error');
@@ -449,10 +460,21 @@ async function checkAuthStatus() {
     }
 }
 
+function handleForgotPassword(e) {
+    e.preventDefault();
+    
+    // Fechar modal de login se estiver aberto
+    closeSignInModal();
+    
+    // Redirecionar para a página de esqueci senha
+    window.location.href = '/forgot-password';
+}
+
 window.authFunctions = {
     showSignUpModal,
     showSignInModal,
     closeSignUpModal,
     closeSignInModal,
-    updateHeaderForLoggedUser
+    updateHeaderForLoggedUser,
+    handleForgotPassword
 };

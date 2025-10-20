@@ -58,13 +58,22 @@ public class SecurityConfig {
                                 "/signup",
                                 "/filmes",
                                 "/series",
+                                "/releases",
+                                "/top-rated",
                                 "/uploads/**",
                                 "/movies/filmes/**",
-                                "/movies/series/**"
+                                "/movies/series/**",
+                                "/email-verified",
+                                "/email-verification-error",
+                                "/forgot-password",
+                                "/reset-password"
                         ).permitAll() // significa que qualquer pessoa (visitantes, usuários, admins) pode acessar essas páginas.
 
+                        // Páginas que requerem autenticação
+                        .requestMatchers("/profile", "/watchlist").authenticated()
+
                         // Permite acesso PÚBLICO às APIs de autenticação, o que é necessário para que os usuários possam se registrar e fazer login.
-                        .requestMatchers("/api/signup", "/api/signin", "/api/auth/status").permitAll()
+                        .requestMatchers("/api/signup", "/api/signin", "/api/auth/status", "/api/verify-email", "/api/resend-verification", "/api/forgot-password", "/api/reset-password").permitAll()
 
                         // Permite acesso PÚBLICO com méto.do GET a todas as APIs de conteúdo e reviews. Isso permite que um visitante veja os detalhes de um filme no modal, por exemplo, mas ele não poderá fazer um POST para criar um review sem estar logado.
                         .requestMatchers(HttpMethod.GET, "/movies/api/**", "/reviews/api/**", "/ratings/api/**").permitAll()

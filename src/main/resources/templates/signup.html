@@ -15,6 +15,11 @@
                 <h2 class="auth-title">Criar Conta</h2>
                 <p class="auth-subtitle">Junte-se à comunidade TopFilmesBrasil</p>
 
+                <div class="auth-info" style="background: #e8f5e8; border: 1px solid #4caf50; border-radius: 8px; padding: 15px; margin-bottom: 20px; color: #2e7d32;">
+                    <strong>📧 Verificação de Email:</strong><br>
+                    Após o cadastro, você receberá um email para verificar sua conta. Verifique seu email antes de fazer login.
+                </div>
+
                 <form id="signUpForm" class="auth-form" th:action="@{/api/signup}" method="post">
                     <div class="form-group">
                         <label for="signupName" class="form-label">Nome Completo</label>

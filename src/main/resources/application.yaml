@@ -1,4 +1,7 @@
 spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:default}
+  
   application:
     name: TopFilmesBrasil
 
@@ -29,8 +32,14 @@ spring:
       hibernate:
         format_sql: true
 
-  # Configuração para Scripts SQL de Inicialização
+  # Desabilitar auto-configuração AWS em desenvolvimento
+  autoconfigure:
+    exclude: 
+      - io.awspring.cloud.autoconfigure.s3.S3AutoConfiguration
 
+  # Configuração para Scripts SQL de Inicialização
+  sql:
+    init:
       mode: always
       platform: postgresql
       continue-on-error: false
@@ -47,10 +56,30 @@ spring:
     resources:
       static-locations: classpath:/static/
 
+  # Configuração de Email
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME:ptkbabayaga@gmail.com}
+    password: ${EMAIL_PASSWORD:kbilqjfzwiwsekmn}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
+
 server:
   port: 8080
   servlet:
     context-path: /
+
+# Configuração da aplicação
+app:
+  url-base: ${APP_URL_BASE:http://localhost:8080}
+
 
 logging:
   level:
@@ -61,3 +90,46 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.tool.schema: DEBUG
     org.springframework.jdbc.datasource.init: DEBUG
+
+---
+# PRODUCTION PROFILE - AWS Configuration
+spring:
+  config:
+    activate:
+      on-profile: production
+  
+  datasource:
+    url: ${RDS_DB_URL:jdbc:postgresql://localhost:5432/topfilmesbrasil}
+    username: ${RDS_USERNAME:postgres}
+    password: ${RDS_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update  # Importante: NÃO usar create-drop em produção
+    show-sql: false  # Desabilitar logs SQL em produção
+    properties:
+      hibernate:
+        format_sql: false
+
+# AWS S3 Configuration
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY_ID}
+      secret-key: ${AWS_SECRET_ACCESS_KEY}
+    region:
+      static: ${AWS_REGION:us-east-1}
+    s3:
+      bucket: ${S3_BUCKET_NAME}
+    stack:
+      auto: false  # Desabilitar auto-configuração de stack
+
+# Logging para produção
+logging:
+  level:
+    root: WARN
+    com.topfilmesbrasil: INFO
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN

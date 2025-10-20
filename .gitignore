@@ -1,9 +1,33 @@
-HELP.md
+# Arquivos de documentação (exceto README.md)
+*.md
+!README.md
+
+# Arquivos de build e compilação
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
+# Arquivos de upload local (não enviar para GitHub)
+uploads/
+!uploads/.gitkeep
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Arquivos de configuração local
+.env
+.env.local
+.env.production
+application-local.yaml
+application-dev.yaml
+
+# Arquivos de IDE
 ### STS ###
 .apt_generated
 .classpath
@@ -25,9 +49,48 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
 ### VS Code ###
 .vscode/
+
+# Arquivos do sistema operacional
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Arquivos de backup
+*.bak
+*.backup
+*.old
+
+# Arquivos de configuração AWS local
+.aws/
+aws-credentials.txt
+
+# Arquivos de configuração Elastic Beanstalk local
+.elasticbeanstalk/
+!.elasticbeanstalk/.gitignore
+
+# Arquivos de configuração Docker (se usado no futuro)
+Dockerfile.local
+docker-compose.local.yml
+
+# Arquivos de teste local
+test-data/
+sample-data/
+
+# Arquivos de documentação de deploy (específicos do ambiente)
+DEPLOY_*.md
+deploy-*.md
+*.plan.md
